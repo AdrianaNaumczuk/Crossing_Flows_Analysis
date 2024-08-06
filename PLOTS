@@ -1,0 +1,48 @@
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+import pandas as pd
+
+
+def read_data(file_path):
+    """
+    Read CSV data into a DataFrame.
+
+    :param file_path: Path to the CSV file
+    :return: DataFrame containing the data
+    """
+    return pd.read_csv(file_path, index_col=0)
+
+
+def plot_data(df_plot, my_file, my_agent_i, my_agent_j, output_path):
+    """
+    Generate and save a plot from the DataFrame.
+
+    :param df_plot: DataFrame containing the data to plot
+    :param my_file: Identifier for the data file
+    :param my_agent_i: ID of the first agent
+    :param my_agent_j: ID of the second agent
+    :param output_path: Path to save the plot
+    """
+    best_taus = df_plot.idxmin(axis=0).tolist()
+    no_tau = int((df_plot.shape[0] - 1) / 2)
+    no_time = df_plot.shape[1]
+
+    colors = [(0, 'navy'), (0.125, 'blue'), (0.250, 'cyan'), (0.375, 'green'), (0.5, 'yellow'), (0.625, 'orange'),
+              (0.75, 'pink'), (1, 'red')]
+    cmap1 = LinearSegmentedColormap.from_list('custom_colormap', colors)
+    cmap2 = plt.cm.jet
+    cax = plt.imshow(df_plot, cmap=cmap2, aspect='auto', origin='lower', extent=[0, no_time, -no_tau, no_tau])
+    plt.scatter(range(no_time), best_taus, c='black', marker='o', s=2)
+    plt.axhline(y=0, color='red', linestyle='--', linewidth=2, label='tau = 0')  # Horizontal line at tau = 0
+    # Add color bar
+    cbar = plt.colorbar(cax, label='C_ij')
+    cbar.set_label('C_ij')
+    plt.xlabel('Data Time[1/120s]')
+    plt.ylabel('Tau[1/120s]')
+    tick_positions = range(-no_tau, no_tau + 1, 30)  # Adjusted range for ticks
+    tick_labels = [str(tick) for tick in tick_positions]
+    plt.yticks(tick_positions, tick_labels)
+    plt.title(f'{my_file}: Agent {my_agent_i} vs. Agent {my_agent_j}')
+    # Save plot as PNG
+    plt.savefig(output_path, format='png')
+    plt.show()
