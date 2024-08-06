@@ -1,14 +1,14 @@
 # Crossing_Flows_Analysis
 
 ## Description
-This project involves calculating and visualizing Time-Dependent Delayed Speed Correlation (TDSC) between pairs of agents using a dataset of pedestrian trajectories. The dataset includes positional coordinates of agents, which are used to compute velocities and TDSC values. The calculation functions are defined in the tdsc.py file, while the plots.py file handles the generation and saving of visual plots.
+This project involves calculating and visualizing Time-Dependent Delayed Speed Correlation (TDSC) between pairs of agents using a dataset of pedestrian trajectories. The dataset includes positional coordinates of agents, which are used to compute velocities and TDSC values. The calculation functions are defined in the TDSC.py file, while the PLOTS.py file handles the generation and saving of visual plots.
 
 ## Purpose
 The main objective of this study is to explore how delays in one agent's velocity relate to another agent's velocity over time. By analyzing visual representations of these correlations, the project aims to provide insights into how agents' movements are interrelated, which can be valuable for understanding complex behaviors in scenarios such as pedestrian dynamics, vehicle traffic, and multi-agent systems.
 
 ## Features
 
-### Calculation Functions (tdsc.py):
+### Calculation Functions (TDSC.py):
 
 #### Velocity Calculation:
 calculate_velocity(data, agent_num): Computes the velocity of an agent based on its position data over time, converting position changes into speed.
@@ -22,7 +22,7 @@ delta_sij(data, agent_i, agent_j, tau): Measures the absolute difference in velo
 ### TDSC Computation:
 calculate_tdsc(data, agent_i, agent_j, tau, delta_t=1 / 120, omega=80): Computes the Time-Dependent Delayed Speed Correlation (TDSC) between two agents. This method aggregates the differences in velocities over a range of time delays to capture the dynamic relationship between agents.
 
-### Plotting Functions (plots.py):
+### Plotting Functions (PLOTS.py):
 
 #### Data Reading:
 read_data(file_path): Reads TDSC results from a CSV file into a pandas DataFrame.
@@ -50,7 +50,7 @@ plot_data(df_plot, my_file, my_agent_i, my_agent_j, output_path): Generates and 
 #### Prepare Your Data:
 Ensure you have CSV files with positional coordinates for each agent.
 #### Run TDSC Calculations:
-Utilize the functions from tdsc.py to:
+Utilize the functions from TDSC.py to:
 - Compute velocities from positional data.
 - Calculate TDSC values for different pairs of agents and time delays.
 Save the computed TDSC results to CSV files.
@@ -59,13 +59,13 @@ Save the computed TDSC results to CSV files.
 #### Prepare Your Data for Plotting:
 Ensure that the TDSC results are saved in CSV files with the appropriate format.
 #### Generate Plots:
-Run the main() function from plots.py to read the TDSC data and generate visual plots.
+Run the main() function from PLOTS.py to read the TDSC data and generate visual plots.
 
-Example of plots.py usage:
+Example of PLOTS.py usage:
 
     import pandas as pd
-    from tdsc import calculate_tdsc
-    from plots import read_data, plot_data
+    from TDSC import calculate_tdsc
+    from PLOTS import read_data, plot_data
 
     def main():
         # Parameters
@@ -88,5 +88,5 @@ Example of plots.py usage:
         main()
 
 ## Summary
-This project provides a structured approach for analyzing and visualizing Time-Dependent Delayed Speed Correlation (TDSC). The tdsc.py file contains functions for calculating velocities and TDSC values from positional data, while the plots.py file generates visual plots of the results. Together, these components facilitate a comprehensive analysis of dynamic interactions between agents.
+This project provides a structured approach for analyzing and visualizing Time-Dependent Delayed Speed Correlation (TDSC). The TDSC.py file contains functions for calculating velocities and TDSC values from positional data, while the PLOTS.py file generates visual plots of the results. Together, these components facilitate a comprehensive analysis of dynamic interactions between agents.
 
