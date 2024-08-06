@@ -1,0 +1,100 @@
+import numpy as np
+
+def calculate_velocity(data, agent_num):
+    """
+    Calculate the velocity of a specific agent based on its position data.
+
+    Args:
+        data (pd.DataFrame): DataFrame containing position data for agents.
+        agent_num (int): The number of the agent for which the velocity is calculated.
+
+    Returns:
+        np.ndarray: Array of velocities for the specified agent.
+
+    Raises:
+        ValueError: If the required columns for the specified agent are not found in the data.
+    """
+    x_col = f'x position of agent {agent_num}'
+    y_col = f'y position of agent {agent_num}'
+
+    if x_col not in data.columns or y_col not in data.columns:
+        raise ValueError(f"Columns for agent {agent_num} not found in data.")
+
+    x_positions = data[x_col].values
+    y_positions = data[y_col].values
+    velocities = []
+    for t in range(1, len(x_positions)):
+        delta_x = x_positions[t] - x_positions[t - 1]
+        delta_y = y_positions[t] - y_positions[t - 1]
+        distance = np.sqrt(delta_x ** 2 + delta_y ** 2)
+        velocity = (distance / 1000) * 120
+        velocities.append(velocity)
+    return np.array(velocities)
+
+
+def calculate_velocity_with_tau(data, agent_num, tau):
+    """
+    Calculate the velocity of a specific agent with an applied time delay (tau).
+
+    Args:
+        data (pd.DataFrame): DataFrame containing position data for agents.
+        agent_num (int): The number of the agent for which the delayed velocity is calculated.
+        tau (int): The time delay to be applied to the velocity data.
+
+    Returns:
+        np.ndarray: Array of velocities with the applied time delay.
+    """
+    velocities = calculate_velocity(data, agent_num)
+    delayed_velocities = np.roll(velocities, tau)  # Shift velocities by tau
+    if tau > 0:
+        delayed_velocities[:tau] = np.nan  # Set the last 'tau' elements to NaN
+    elif tau < 0:
+        delayed_velocities[tau:] = np.nan  # Set the first 'tau' elements to NaN
+    return delayed_velocities
+
+
+def delta_sij(data, agent_i, agent_j, tau):
+    """
+    Calculate the absolute difference in velocity between two agents with a time delay (tau).
+
+    Args:
+        data (pd.DataFrame): DataFrame containing position data for agents.
+        agent_i (int): The number of the first agent.
+        agent_j (int): The number of the second agent.
+        tau (int): The time delay to be applied to the velocity of the second agent.
+
+    Returns:
+        np.ndarray: Array of absolute differences in velocity between the two agents.
+    """
+    vi = calculate_velocity(data, agent_i)
+    vj = calculate_velocity_with_tau(data, agent_j, tau)
+    return abs(vi - vj)
+
+
+def calculate_tdsc(data, agent_i, agent_j, tau, delta_t=1 / 120, omega=80):
+    """
+    Calculate the Temporal Dynamics of Statistical Correlations (TDSC) between two agents with a time delay (tau).
+
+    Args:
+        data (pd.DataFrame): DataFrame containing position data for agents.
+        agent_i (int): The number of the first agent.
+        agent_j (int): The number of the second agent.
+        tau (int): The time delay to be applied to the velocity of the second agent.
+        delta_t (float, optional): The time step used for interpolation. Default is 1/120.
+        omega (int, optional): The range of time steps for averaging. Default is 80.
+
+    Returns:
+        list: List of TDSC values over time for the specified time delay and agents.
+    """
+    delta_s_agents = delta_sij(data, agent_i, agent_j, tau)
+    t = len(delta_s_agents)
+    c_list = []
+    for timestep in range(t):
+        sum_result = 0
+        for k in range(-omega, omega + 1):
+            t_k = int(round(timestep + k * delta_t))
+            if 0 <= t_k < t:
+                sum_result += delta_s_agents[t_k]
+        C = sum_result / (2 * omega + 1)
+        c_list.append(C)
+    return c_list
